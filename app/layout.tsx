@@ -15,14 +15,14 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Bartr - Profit Tracking for Whatnot Sellers",
+  title: "lyve - Profit Tracking for Whatnot Sellers",
   description: "Track your inventory, calculate profits, and get insights on your Whatnot sales",
   manifest: "/manifest.json",
   themeColor: "#000000",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Bartr",
+    title: "lyve",
   },
 };
 
