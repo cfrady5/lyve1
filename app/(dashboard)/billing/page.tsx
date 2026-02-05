@@ -2,10 +2,15 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Check } from "lucide-react";
+import { Check, CheckCircle2, XCircle } from "lucide-react";
+import { SubscribeButton } from "@/components/billing/SubscribeButton";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
-export default async function BillingPage() {
+export default async function BillingPage({
+  searchParams,
+}: {
+  searchParams: { success?: string; canceled?: string };
+}) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -28,6 +33,24 @@ export default async function BillingPage() {
         <h1 className="text-3xl font-bold">Billing</h1>
         <p className="text-muted-foreground">Manage your subscription and billing details.</p>
       </div>
+
+      {/* Success/Cancel Messages */}
+      {searchParams.success && (
+        <Alert className="bg-success-subtle border-success-subtle">
+          <CheckCircle2 className="h-4 w-4 text-success-subtle" />
+          <AlertDescription className="text-success-subtle">
+            Subscription activated successfully! Welcome to lyve premium.
+          </AlertDescription>
+        </Alert>
+      )}
+      {searchParams.canceled && (
+        <Alert className="bg-warning-subtle border-warning-subtle">
+          <XCircle className="h-4 w-4 text-warning-subtle" />
+          <AlertDescription className="text-warning-subtle">
+            Subscription canceled. You can try again whenever you're ready.
+          </AlertDescription>
+        </Alert>
+      )}
 
       {/* Subscription Status */}
       <Card>
@@ -108,25 +131,7 @@ export default async function BillingPage() {
             </ul>
           </div>
 
-          {isSubscribed ? (
-            <div className="space-y-2">
-              <Button variant="secondary" className="w-full" disabled>
-                Active Subscription
-              </Button>
-              <p className="text-xs text-center text-muted-foreground">
-                Subscription management coming soon
-              </p>
-            </div>
-          ) : (
-            <div className="space-y-2">
-              <Button className="w-full" disabled>
-                Subscribe to lyve premium
-              </Button>
-              <p className="text-xs text-center text-muted-foreground">
-                Payment processing integration coming soon
-              </p>
-            </div>
-          )}
+          <SubscribeButton isSubscribed={isSubscribed} />
         </CardContent>
       </Card>
 
@@ -139,7 +144,7 @@ export default async function BillingPage() {
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground">
-              Payment processing integration coming soon.
+              Click "Manage Subscription" above to update your payment method and view invoices.
             </p>
           </CardContent>
         </Card>
