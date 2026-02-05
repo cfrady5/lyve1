@@ -47,7 +47,7 @@ export default async function BillingPage({
         <Alert className="bg-warning-subtle border-warning-subtle">
           <XCircle className="h-4 w-4 text-warning-subtle" />
           <AlertDescription className="text-warning-subtle">
-            Subscription canceled. You can try again whenever you're ready.
+            Subscription canceled. You can try again whenever you&apos;re ready.
           </AlertDescription>
         </Alert>
       )}
@@ -144,7 +144,7 @@ export default async function BillingPage({
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground">
-              Click "Manage Subscription" above to update your payment method and view invoices.
+              Click &ldquo;Manage Subscription&rdquo; above to update your payment method and view invoices.
             </p>
           </CardContent>
         </Card>
