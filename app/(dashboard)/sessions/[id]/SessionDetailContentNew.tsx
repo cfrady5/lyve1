@@ -19,6 +19,7 @@ import { WhatnotCSVImporter } from '@/components/sessions/postshow/WhatnotCSVImp
 import { RapidPhotoUpload } from '@/components/sessions/RapidPhotoUpload';
 import { ImportPreshowCSV } from '@/components/sessions/ImportPreshowCSV';
 import { ManualAddItemDialog } from '@/components/sessions/ManualAddItemDialog';
+import { InventoryPickerModal } from '@/components/sessions/InventoryPickerModal';
 import * as sessionsService from '@/lib/services/sessions';
 
 interface SessionDetailContentProps {
@@ -40,6 +41,7 @@ export function SessionDetailContent({ sessionId, userId }: SessionDetailContent
   const [photoUploadOpen, setPhotoUploadOpen] = useState(false);
   const [csvImportOpen, setCsvImportOpen] = useState(false);
   const [manualAddOpen, setManualAddOpen] = useState(false);
+  const [inventoryPickerOpen, setInventoryPickerOpen] = useState(false);
 
   const loadSession = useCallback(async () => {
     setLoading(true);
@@ -525,6 +527,14 @@ export function SessionDetailContent({ sessionId, userId }: SessionDetailContent
                     >
                       Add Item
                     </Button>
+                    <Button
+                      variant="default"
+                      size="sm"
+                      onClick={() => setInventoryPickerOpen(true)}
+                      disabled={!isDraft}
+                    >
+                      Add from Lyvefolio
+                    </Button>
                   </div>
                 </div>
               </CardHeader>
@@ -659,6 +669,15 @@ export function SessionDetailContent({ sessionId, userId }: SessionDetailContent
         open={manualAddOpen}
         onOpenChange={setManualAddOpen}
         onAdd={handleManualAddItem}
+      />
+
+      <InventoryPickerModal
+        open={inventoryPickerOpen}
+        onOpenChange={setInventoryPickerOpen}
+        sessionId={sessionId}
+        userId={userId}
+        existingItemIds={items.map(item => item.item_id)}
+        onItemsAdded={loadSession}
       />
     </div>
   );

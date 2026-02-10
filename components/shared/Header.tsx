@@ -24,6 +24,7 @@ const navItems = [
   { name: "Sessions", href: "/sessions", icon: "📦" },
   { name: BRAND.PORTFOLIO, href: "/lyvefolio", icon: "💼" },
   { name: "Insights", href: "/insights", icon: "📊" },
+  { name: "lyve calculator", href: "/calculator", icon: "🧮" },
 ];
 
 export function Header({ user }: HeaderProps) {
