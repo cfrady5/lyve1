@@ -200,7 +200,14 @@ export default function CalculatorPage() {
     setLotTotal('');
   };
 
-  const { totalMarket, totalOffer, cardCount, highestCard, lowestCard, validRows } = useMemo(() => {
+  const { totalMarket, totalOffer, cardCount, highestCard, lowestCard, validRows } = useMemo<{
+    totalMarket: number;
+    totalOffer: number;
+    cardCount: number;
+    highestCard: { name: string; value: number } | null;
+    lowestCard: { name: string; value: number } | null;
+    validRows: CardRow[];
+  }>(() => {
     let totalMarket = 0;
     let totalOffer = 0;
     let cardCount = 0;
@@ -646,7 +653,7 @@ export default function CalculatorPage() {
               {/* Empty State */}
               {rows.length === 1 && !rows[0].cardName && !rows[0].marketValue && (
                 <div className="text-center py-12 text-muted-foreground">
-                  <p className="text-sm">No cards added yet. Click "Add Card" or use "Paste Import" to get started.</p>
+                  <p className="text-sm">No cards added yet. Click &ldquo;Add Card&rdquo; or use &ldquo;Paste Import&rdquo; to get started.</p>
                 </div>
               )}
             </div>
