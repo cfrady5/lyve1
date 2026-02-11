@@ -6,11 +6,13 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2026-01-28.clover',
 });
 
-// Use service role key for webhook as it bypasses RLS
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+// Use service role key for webhook as it bypasses RLS (lazy init to avoid build-time errors)
+function getSupabaseAdmin() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+}
 
 export async function POST(req: NextRequest) {
   const body = await req.text();
@@ -96,7 +98,7 @@ async function handleSubscriptionCreated(session: Stripe.Checkout.Session) {
   const subscriptionId = session.subscription as string;
 
   // Get user from customer ID
-  const { data: profile } = await supabaseAdmin
+  const { data: profile } = await getSupabaseAdmin()
     .from('profiles')
     .select('id')
     .eq('stripe_customer_id', customerId)
@@ -108,7 +110,7 @@ async function handleSubscriptionCreated(session: Stripe.Checkout.Session) {
   }
 
   // Update profile with subscription
-  await supabaseAdmin
+  await getSupabaseAdmin()
     .from('profiles')
     .update({
       tier: 'premium',
@@ -121,7 +123,7 @@ async function handleSubscriptionCreated(session: Stripe.Checkout.Session) {
 async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
   const customerId = subscription.customer as string;
 
-  const { data: profile } = await supabaseAdmin
+  const { data: profile } = await getSupabaseAdmin()
     .from('profiles')
     .select('id')
     .eq('stripe_customer_id', customerId)
@@ -129,7 +131,7 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
 
   if (!profile) return;
 
-  await supabaseAdmin
+  await getSupabaseAdmin()
     .from('profiles')
     .update({
       subscription_status: subscription.status,
@@ -141,7 +143,7 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
 async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
   const customerId = subscription.customer as string;
 
-  const { data: profile } = await supabaseAdmin
+  const { data: profile } = await getSupabaseAdmin()
     .from('profiles')
     .select('id')
     .eq('stripe_customer_id', customerId)
@@ -149,7 +151,7 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
 
   if (!profile) return;
 
-  await supabaseAdmin
+  await getSupabaseAdmin()
     .from('profiles')
     .update({
       tier: 'free',
@@ -162,7 +164,7 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
 async function handleInvoicePaid(invoice: Stripe.Invoice) {
   const customerId = invoice.customer as string;
 
-  const { data: profile } = await supabaseAdmin
+  const { data: profile } = await getSupabaseAdmin()
     .from('profiles')
     .select('id')
     .eq('stripe_customer_id', customerId)
@@ -171,7 +173,7 @@ async function handleInvoicePaid(invoice: Stripe.Invoice) {
   if (!profile) return;
 
   // Ensure subscription is marked active
-  await supabaseAdmin
+  await getSupabaseAdmin()
     .from('profiles')
     .update({
       subscription_status: 'active',
@@ -183,7 +185,7 @@ async function handleInvoicePaid(invoice: Stripe.Invoice) {
 async function handleInvoiceFailed(invoice: Stripe.Invoice) {
   const customerId = invoice.customer as string;
 
-  const { data: profile } = await supabaseAdmin
+  const { data: profile } = await getSupabaseAdmin()
     .from('profiles')
     .select('id')
     .eq('stripe_customer_id', customerId)
@@ -191,7 +193,7 @@ async function handleInvoiceFailed(invoice: Stripe.Invoice) {
 
   if (!profile) return;
 
-  await supabaseAdmin
+  await getSupabaseAdmin()
     .from('profiles')
     .update({
       subscription_status: 'past_due',
